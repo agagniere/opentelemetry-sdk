@@ -31,6 +31,11 @@
             .url = "git+https://github.com/zig-o11y/opentelemetry-proto?ref=main#c43bd4c4db96fd839c594b7b701b44866b19457e",
             .hash = "opentelemetry_proto-1.10.3-S4Y0u6zjAgBXl5JQ75DnsV5L2DsJeRzbgbYLSDTkl-f9",
         },
+        .cgrpc_wrapper = .{
+            .url = "git+https://github.com/agagniere/cgrpc_wrapper?ref=master#32ee939cbe0c74c58adce5f8ed81dd60fe7fb7cb",
+            .hash = "cgrpc_wrapper-0.2.0-O5w4NSmZAAAWtB7fQ8l1lghCY1HHZJyF4P8xL1oityu6",
+            .lazy = true,
+        },
     },
     .paths = .{
         "build.zig",

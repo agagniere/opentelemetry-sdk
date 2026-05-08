@@ -1,7 +1,7 @@
 const std = @import("std");
 const zon = @import("build.zig.zon");
 
-const GrpcProvider = enum { none, libgrpc, zig_grpc };
+const GrpcProvider = enum { none, libgrpc };
 
 pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
@@ -38,11 +38,25 @@ pub fn build(b: *std.Build) !void {
     // the same `send` and `Configuration` surface. PR follow-up wires the
     // libgrpc backend; for now every option resolves to the noop.
     const grpc_transport_mod = switch (grpc_provider) {
-        .none, .libgrpc, .zig_grpc => b.createModule(.{
+        .none => b.createModule(.{
             .root_source_file = b.path("src/grpc/noop.zig"),
             .target = target,
             .optimize = optimize,
         }),
+        .libgrpc => blk: {
+            const cgrpc_dep = b.lazyDependency("cgrpc_wrapper", .{
+                .target = target,
+                .optimize = optimize,
+            }) orelse return;
+            break :blk b.createModule(.{
+                .root_source_file = b.path("src/grpc/libgrpc.zig"),
+                .target = target,
+                .optimize = optimize,
+                .imports = &.{
+                    .{ .name = "cgrpc_wrapper", .module = cgrpc_dep.module("cgrpc_wrapper") },
+                },
+            });
+        },
     };
 
     // Modules section
